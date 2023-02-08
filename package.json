@@ -5,6 +5,17 @@
   "main": "dist/index.js",
   "browser": "dist/soursop.iife.js",
   "types": "dist/index.d.ts",
+  "publishConfig": {
+    "@natanfeitosa:registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/natanfeitosa/soursop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/natanfeitosa/soursop/issues"
+  },
+  "homepage": "https://github.com/natanfeitosa/soursop/#readme",
   "scripts": {
     "lint": "eslint . --ext .ts",
     "clear": "rimraf dist",
