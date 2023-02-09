@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "A small reactive tool for rich web pages",
   "main": "dist/index.js",
-  "browser": "dist/soursop.iife.js",
+  "unpkg": "dist/soursop.iife.js",
+  "jsdelivr": "dist/soursop.iife.js",
   "types": "dist/index.d.ts",
   "publishConfig": {
     "@natanfeitosa:registry": "https://npm.pkg.github.com"
