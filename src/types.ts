@@ -31,7 +31,14 @@ export type VTextElement = {
   }
 }
 
-export type VDom = VElement | VComponentElement<Record<string, unknown>> | VTextElement
+export type VFragment = {
+  type: symbol
+  props: {
+    childrens: VDom[]
+  }
+}
+
+export type VDom = VElement | VComponentElement<Record<string, unknown>> | VTextElement | VFragment
 
 export type VProps = Record<string, unknown> & {
   children?: VDom[]

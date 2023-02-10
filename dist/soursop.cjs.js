@@ -31,6 +31,7 @@ class Globals {
   }
 }
 var globals = new Globals();
+const Fragment = Symbol.for("Soursop.Fragment");
 
 const isEvent = (key) => key.startsWith("on");
 const isProperty = (key) => key !== "children" && !isEvent(key);
@@ -129,6 +130,11 @@ function updateFunctionComponent(fiber) {
   const children = [fiber.type(fiber.props)];
   reconcileChildren(fiber, children);
 }
+function updateFragmentComponent(fiber) {
+  if (fiber.type == Fragment) {
+    reconcileChildren(fiber, fiber.props.children);
+  }
+}
 function updateHostComponent(fiber) {
   var _a;
   if (!fiber.dom) {
@@ -196,6 +202,8 @@ function workLoop(deadline) {
 function performUnitOfWork(fiber) {
   if (fiber.type instanceof Function) {
     updateFunctionComponent(fiber);
+  } else if (fiber.type == Fragment) {
+    updateFragmentComponent(fiber);
   } else {
     updateHostComponent(fiber);
   }
@@ -279,6 +287,7 @@ const onUpdated = createHook(Hooks.UPDATED);
 const onBeforeUnmount = createHook(Hooks.BEFORE_UNMOUNT);
 const onUnmounted = createHook(Hooks.UNMOUNTED);
 
+exports.Fragment = Fragment;
 exports.createElement = createElement;
 exports.onBeforeMount = onBeforeMount;
 exports.onBeforeUnmount = onBeforeUnmount;

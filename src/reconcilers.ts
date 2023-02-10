@@ -1,5 +1,5 @@
 import { createDom } from "./dom"
-import globals from "./globals"
+import globals, { Fragment } from "./globals"
 import type { Fiber, VDom } from "./types"
 
 export function updateFunctionComponent(fiber: Fiber) {
@@ -13,6 +13,12 @@ export function updateFunctionComponent(fiber: Fiber) {
   
   const children = [fiber.type(fiber.props)]
   reconcileChildren(fiber, children)
+}
+
+export function updateFragmentComponent(fiber: Fiber) {
+  if(fiber.type == Fragment) {
+    reconcileChildren(fiber, fiber.props.children!)
+  }
 }
 
 export function updateHostComponent(fiber: Fiber) {
