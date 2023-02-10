@@ -1,7 +1,5 @@
 # soursop
 
-A small reactive tool for rich web pages
-
 
 <div align="center">
   <img alt="npm" src="https://img.shields.io/npm/v/soursop">
