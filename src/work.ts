@@ -1,6 +1,6 @@
 import { commitRoot } from "./commiters"
-import globals from "./globals"
-import { updateFunctionComponent, updateHostComponent } from "./reconcilers"
+import globals, { Fragment } from "./globals"
+import { updateFragmentComponent, updateFunctionComponent, updateHostComponent } from "./reconcilers"
 import type { Fiber } from "./types"
 
 export function workLoop(deadline: IdleDeadline) {
@@ -24,6 +24,8 @@ export function workLoop(deadline: IdleDeadline) {
 export function performUnitOfWork(fiber: Fiber) {
   if (fiber.type instanceof Function) {
     updateFunctionComponent(fiber)
+  } else if (fiber.type == Fragment) {
+    updateFragmentComponent(fiber)
   } else {
     updateHostComponent(fiber)
   }

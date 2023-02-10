@@ -18,3 +18,5 @@ class Globals {
 //   useStateIndex
 // }
 export default new Globals()
+
+export const Fragment = Symbol.for('Soursop.Fragment')
