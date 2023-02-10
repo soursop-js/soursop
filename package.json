@@ -22,7 +22,7 @@
     "clear": "rimraf dist",
     "build": "rollup -c"
   },
-  "keywords": [],
+  "keywords": ["reactive", "vue", "front-end", "vdom", "ui", "react"],
   "author": "Natan Feitosa <natansantosapps@gmail.com>",
   "license": "MIT",
   "dependencies": {
