@@ -64,8 +64,16 @@ export function reconcileChildren(wipFiber: Fiber, elements: VDom[]) {
       }
     }
     if (oldFiber && !sameType) {
-      oldFiber.effectTag = "DELETION"
-      globals.deletions.push(oldFiber)
+      function deletes(fiber: Fiber) {
+        fiber.effectTag = "DELETION"
+
+        if (fiber.child) {
+          deletes(fiber.child)
+        }
+      }
+
+      deletes(oldFiber)
+      globals.deletions.push(oldFiber);
     }
 
     if (oldFiber) {

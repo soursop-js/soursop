@@ -37,7 +37,9 @@ export function commitWork(fiber?: Fiber) {
       fiber.props
     )
   } else if (fiber.effectTag === "DELETION") {
-    commitDeletion(fiber, domParent)
+    try {
+      commitDeletion(fiber, domParent);
+    } catch (e) { }
   }
 
   commitWork(fiber.child)
@@ -47,7 +49,6 @@ export function commitWork(fiber?: Fiber) {
 export function commitDeletion(fiber: Fiber, domParent: RDom) {
   if (fiber.dom) {
     domParent.removeChild(fiber.dom)
-    return
   }
   
   commitDeletion(fiber.child as Fiber, domParent)

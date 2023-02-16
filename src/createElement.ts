@@ -1,7 +1,7 @@
 import type { TPrimitive, VDom, VTextElement } from "./types"
 
 export default function createElement(type: string, props: Record<string, unknown>, ...children: Array<VDom | TPrimitive>): VDom {
-  children = children.filter(c => !['null', 'undefined'].includes(`${c}`))
+  children = children.filter(c => ![null, undefined, false].includes(<null | undefined | boolean>c))
   
   return {
     type,
