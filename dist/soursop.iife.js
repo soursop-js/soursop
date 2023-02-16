@@ -2,7 +2,7 @@ var soursop = (function (exports) {
   'use strict';
 
   function createElement(type, props, ...children) {
-    children = children.filter((c) => !["null", "undefined"].includes(`${c}`));
+    children = children.filter((c) => ![null, void 0, false].includes(c));
     return {
       type,
       props: {
@@ -106,7 +106,10 @@ var soursop = (function (exports) {
         fiber.props
       );
     } else if (fiber.effectTag === "DELETION") {
-      commitDeletion(fiber, domParent);
+      try {
+        commitDeletion(fiber, domParent);
+      } catch (e) {
+      }
     }
     commitWork(fiber.child);
     commitWork(fiber.sibling);
@@ -114,7 +117,6 @@ var soursop = (function (exports) {
   function commitDeletion(fiber, domParent) {
     if (fiber.dom) {
       domParent.removeChild(fiber.dom);
-      return;
     }
     commitDeletion(fiber.child, domParent);
   }
@@ -169,7 +171,13 @@ var soursop = (function (exports) {
         };
       }
       if (oldFiber && !sameType) {
-        oldFiber.effectTag = "DELETION";
+        let deletes = function(fiber) {
+          fiber.effectTag = "DELETION";
+          if (fiber.child) {
+            deletes(fiber.child);
+          }
+        };
+        deletes(oldFiber);
         globals.deletions.push(oldFiber);
       }
       if (oldFiber) {
