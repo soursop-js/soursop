@@ -18,6 +18,7 @@ export function updateFunctionComponent(fiber: Fiber) {
   const children = [fiber.type(fiber.props)]
 
   if(isNew) {
+    callHooks(Hooks.CREATED, fiber.hooks!)
     callHooks(Hooks.BEFORE_MOUNT, fiber.hooks!)
   } else if (updating) {
     callHooks(Hooks.BEFORE_UPDATE, fiber.hooks!)

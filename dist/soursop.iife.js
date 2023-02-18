@@ -158,6 +158,7 @@ var soursop = (function (exports) {
     const updating = fiber.effectTag == "UPDATE";
     const children = [fiber.type(fiber.props)];
     if (isNew) {
+      callHooks(Hooks.CREATED, fiber.hooks);
       callHooks(Hooks.BEFORE_MOUNT, fiber.hooks);
     } else if (updating) {
       callHooks(Hooks.BEFORE_UPDATE, fiber.hooks);
@@ -338,6 +339,7 @@ var soursop = (function (exports) {
       setData(callback);
     };
   }
+  const onCreated = createHook(Hooks.CREATED, _simpleHook);
   const onBeforeMount = createHook(Hooks.BEFORE_MOUNT, _simpleHook);
   const onMounted = createHook(Hooks.MOUNTED, _simpleHook);
   const onBeforeUpdate = createHook(Hooks.BEFORE_UPDATE, _simpleHook);
@@ -350,6 +352,7 @@ var soursop = (function (exports) {
   exports.onBeforeMount = onBeforeMount;
   exports.onBeforeUnmount = onBeforeUnmount;
   exports.onBeforeUpdate = onBeforeUpdate;
+  exports.onCreated = onCreated;
   exports.onMounted = onMounted;
   exports.onUnmounted = onUnmounted;
   exports.onUpdated = onUpdated;

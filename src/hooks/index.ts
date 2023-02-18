@@ -8,6 +8,7 @@ function _simpleHook(getData, setData) {
   }
 }
 
+export const onCreated: lifecycleHookFn = createHook(Hooks.CREATED, _simpleHook)
 export const onBeforeMount: lifecycleHookFn = createHook(Hooks.BEFORE_MOUNT, _simpleHook)
 export const onMounted: lifecycleHookFn = createHook(Hooks.MOUNTED, _simpleHook)
 export const onBeforeUpdate: lifecycleHookFn = createHook(Hooks.BEFORE_UPDATE, _simpleHook)

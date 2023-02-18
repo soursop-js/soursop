@@ -159,6 +159,7 @@ function updateFunctionComponent(fiber) {
   const updating = fiber.effectTag == "UPDATE";
   const children = [fiber.type(fiber.props)];
   if (isNew) {
+    callHooks(Hooks.CREATED, fiber.hooks);
     callHooks(Hooks.BEFORE_MOUNT, fiber.hooks);
   } else if (updating) {
     callHooks(Hooks.BEFORE_UPDATE, fiber.hooks);
@@ -339,6 +340,7 @@ function _simpleHook(getData, setData) {
     setData(callback);
   };
 }
+const onCreated = createHook(Hooks.CREATED, _simpleHook);
 const onBeforeMount = createHook(Hooks.BEFORE_MOUNT, _simpleHook);
 const onMounted = createHook(Hooks.MOUNTED, _simpleHook);
 const onBeforeUpdate = createHook(Hooks.BEFORE_UPDATE, _simpleHook);
@@ -351,6 +353,7 @@ exports.createElement = createElement;
 exports.onBeforeMount = onBeforeMount;
 exports.onBeforeUnmount = onBeforeUnmount;
 exports.onBeforeUpdate = onBeforeUpdate;
+exports.onCreated = onCreated;
 exports.onMounted = onMounted;
 exports.onUnmounted = onUnmounted;
 exports.onUpdated = onUpdated;
