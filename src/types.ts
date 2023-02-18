@@ -10,6 +10,8 @@ export const enum Hooks {
   USE_STATE
 }
 
+export type HooksMap = Map<Hooks, unknown[]>
+
 export type TPrimitive = string | number | boolean | null | undefined
 
 export type FC<P> = (props: P) => VDom
@@ -54,6 +56,8 @@ export type Fiber = {
   alternate?: Fiber
   sibling?: Fiber
   child?: Fiber
-  hooks?: unknown[]
+  hooks?: HooksMap
   effectTag?: 'UPDATE' | 'PLACEMENT' | 'DELETION'
 }
+
+export type lifecycleHookFn = ((callback: (() => void)) => void)

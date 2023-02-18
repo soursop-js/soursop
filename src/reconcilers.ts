@@ -1,18 +1,35 @@
 import { createDom } from "./dom"
 import globals, { Fragment } from "./globals"
-import type { Fiber, VDom } from "./types"
+import { Fiber, Hooks, VDom } from "./types"
+import { callHooks } from "./utils"
 
 export function updateFunctionComponent(fiber: Fiber) {
   globals.wipFiber = fiber
-  globals.useStateIndex = 0
-  globals.wipFiber.hooks = []
+  // globals.useStateIndex = 0
+  globals.wipFiber.hooks = new Map()
 
   if(!(fiber.type instanceof Function)) {
     return
   }
+    
+  const isNew = fiber.effectTag == "PLACEMENT"
+  const updating = fiber.effectTag == "UPDATE"
   
   const children = [fiber.type(fiber.props)]
+
+  if(isNew) {
+    callHooks(Hooks.BEFORE_MOUNT, fiber.hooks!)
+  } else if (updating) {
+    callHooks(Hooks.BEFORE_UPDATE, fiber.hooks!)
+  }
+  
   reconcileChildren(fiber, children)
+
+  if(isNew) {
+    callHooks(Hooks.MOUNTED, fiber.hooks!);
+  } else if(updating) {
+    callHooks(Hooks.UPDATED, fiber.hooks!)
+  }
 }
 
 export function updateFragmentComponent(fiber: Fiber) {

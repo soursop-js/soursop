@@ -1,6 +1,7 @@
 import { updateDom } from "./dom"
 import globals from "./globals"
-import type { Fiber, RDom, VProps } from "./types"
+import { Hooks, Fiber, RDom, VProps } from "./types"
+import { callHooks, isFunctionComponent } from "./utils"
 
 export function commitRoot() {
   (globals.deletions ?? []).forEach(commitWork)
@@ -47,8 +48,16 @@ export function commitWork(fiber?: Fiber) {
 }
 
 export function commitDeletion(fiber: Fiber, domParent: RDom) {
+  if (isFunctionComponent(fiber)) {
+    callHooks(Hooks.BEFORE_UNMOUNT, fiber.hooks!);
+  }
+  
   if (fiber.dom) {
     domParent.removeChild(fiber.dom)
+  }
+
+  if (isFunctionComponent(fiber)) {
+    callHooks(Hooks.UNMOUNTED, fiber.hooks!);
   }
   
   commitDeletion(fiber.child as Fiber, domParent)

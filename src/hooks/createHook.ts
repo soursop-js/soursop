@@ -1,14 +1,24 @@
-// import globals from "src/globals";
-import { Hooks } from "../types";
+import globals from "../globals"
+import { hookRaw, Hooks } from "../types"
 
-// export default function createHook(lifecycle: Hooks) {
-//   return (callback: () => void): void => {
-//     globals.wipFiber.alternate.hooks.at(lifecycle) = []
+export default function createHook<R, D>(lifecycle: Hooks, hookFn: hookRaw<R, D>): R {
+  if(!(hookFn instanceof Function)) {
+    throw Error('The second argument of `createHook` must be a function')
+  }
+  
+  const getData = () => {
+    const data = globals.wipFiber?.alternate?.hooks?.get(lifecycle)
+    if(data) {
+      return data.at(-1) as D
+    }
+  }
 
-//     hooks.push(callback)
-//   }
-// }
+  const setData = (hook: D) => {
+    const hooks = (globals.wipFiber?.hooks?.get(lifecycle) ?? []) as D[]
 
-export default function createHook(lifecycle: Hooks) {
-  return (callback: () => void): void => callback()
+    //@ts-ignore
+    globals.wipFiber.hooks.set(lifecycle, [ ...hooks, hook ])
+  }
+
+  return hookFn(getData, setData)
 }

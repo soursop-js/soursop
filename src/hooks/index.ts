@@ -1,11 +1,18 @@
-import { Hooks } from '../types'
+import { Hooks, lifecycleHookFn } from '../types'
 import createHook from './createHook'
 
-export const onBeforeMount = createHook(Hooks.BEFORE_MOUNT)
-export const onMounted = createHook(Hooks.MOUNTED)
-export const onBeforeUpdate = createHook(Hooks.BEFORE_UPDATE)
-export const onUpdated = createHook(Hooks.UPDATED)
-export const onBeforeUnmount = createHook(Hooks.BEFORE_UNMOUNT)
-export const onUnmounted = createHook(Hooks.UNMOUNTED)
+//@ts-ignore
+function _simpleHook(getData, setData) {
+  return (callback: (() => void)) => {
+    setData(callback)
+  }
+}
+
+export const onBeforeMount: lifecycleHookFn = createHook(Hooks.BEFORE_MOUNT, _simpleHook)
+export const onMounted: lifecycleHookFn = createHook(Hooks.MOUNTED, _simpleHook)
+export const onBeforeUpdate: lifecycleHookFn = createHook(Hooks.BEFORE_UPDATE, _simpleHook)
+export const onUpdated: lifecycleHookFn = createHook(Hooks.UPDATED, _simpleHook)
+export const onBeforeUnmount: lifecycleHookFn = createHook(Hooks.BEFORE_UNMOUNT, _simpleHook)
+export const onUnmounted: lifecycleHookFn = createHook(Hooks.UNMOUNTED, _simpleHook)
 
 export { default as useState } from './useState'

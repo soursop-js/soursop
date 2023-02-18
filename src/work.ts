@@ -2,6 +2,7 @@ import { commitRoot } from "./commiters"
 import globals, { Fragment } from "./globals"
 import { updateFragmentComponent, updateFunctionComponent, updateHostComponent } from "./reconcilers"
 import type { Fiber } from "./types"
+import { isFunctionComponent } from "./utils"
 
 export function workLoop(deadline: IdleDeadline) {
   let shouldYield = false
@@ -22,7 +23,7 @@ export function workLoop(deadline: IdleDeadline) {
 // requestIdleCallback(workLoop)
 
 export function performUnitOfWork(fiber: Fiber) {
-  if (fiber.type instanceof Function) {
+  if (isFunctionComponent(fiber)) {
     updateFunctionComponent(fiber)
   } else if (fiber.type == Fragment) {
     updateFragmentComponent(fiber)
