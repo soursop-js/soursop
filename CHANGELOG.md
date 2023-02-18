@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - dynamic element removal ([#4](https://github.com/natanfeitosa/soursop/issues/4))
 - calling lifecycle hooks ([#3](https://github.com/natanfeitosa/soursop/issues/3))
+- dynamic fragment removal
 
 ### Removed
 
