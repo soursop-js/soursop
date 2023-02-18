@@ -36,6 +36,14 @@ var soursop = (function (exports) {
   const isProperty = (key) => key !== "children" && !isEvent(key);
   const isNew = (prev, next) => (key) => prev[key] !== next[key];
   const transformAttr = (name) => name.toLowerCase() == "classname" ? "class" : name;
+  const isFunctionComponent = (fiber) => fiber.type instanceof Function;
+  function callHooks(lifecycle, hooks) {
+    var _a, _b, _c;
+    if (!hooks) {
+      hooks = (_b = (_a = globals.wipFiber) == null ? void 0 : _a.alternate) == null ? void 0 : _b.hooks;
+    }
+    ((_c = hooks.get(lifecycle)) != null ? _c : []).forEach((hook) => hook());
+  }
 
   function updateDom(dom, prevProps, nextProps) {
     if (!Boolean(prevProps)) {
@@ -80,6 +88,19 @@ var soursop = (function (exports) {
     return dom;
   }
 
+  var Hooks = /* @__PURE__ */ ((Hooks2) => {
+    Hooks2[Hooks2["BEFORE_CREATE"] = 0] = "BEFORE_CREATE";
+    Hooks2[Hooks2["CREATED"] = 1] = "CREATED";
+    Hooks2[Hooks2["BEFORE_MOUNT"] = 2] = "BEFORE_MOUNT";
+    Hooks2[Hooks2["MOUNTED"] = 3] = "MOUNTED";
+    Hooks2[Hooks2["BEFORE_UPDATE"] = 4] = "BEFORE_UPDATE";
+    Hooks2[Hooks2["UPDATED"] = 5] = "UPDATED";
+    Hooks2[Hooks2["BEFORE_UNMOUNT"] = 6] = "BEFORE_UNMOUNT";
+    Hooks2[Hooks2["UNMOUNTED"] = 7] = "UNMOUNTED";
+    Hooks2[Hooks2["USE_STATE"] = 8] = "USE_STATE";
+    return Hooks2;
+  })(Hooks || {});
+
   function commitRoot() {
     var _a;
     ((_a = globals.deletions) != null ? _a : []).forEach(commitWork);
@@ -115,21 +136,38 @@ var soursop = (function (exports) {
     commitWork(fiber.sibling);
   }
   function commitDeletion(fiber, domParent) {
+    if (isFunctionComponent(fiber)) {
+      callHooks(Hooks.BEFORE_UNMOUNT, fiber.hooks);
+    }
     if (fiber.dom) {
       domParent.removeChild(fiber.dom);
+    }
+    if (isFunctionComponent(fiber)) {
+      callHooks(Hooks.UNMOUNTED, fiber.hooks);
     }
     commitDeletion(fiber.child, domParent);
   }
 
   function updateFunctionComponent(fiber) {
     globals.wipFiber = fiber;
-    globals.useStateIndex = 0;
-    globals.wipFiber.hooks = [];
+    globals.wipFiber.hooks = /* @__PURE__ */ new Map();
     if (!(fiber.type instanceof Function)) {
       return;
     }
+    const isNew = fiber.effectTag == "PLACEMENT";
+    const updating = fiber.effectTag == "UPDATE";
     const children = [fiber.type(fiber.props)];
+    if (isNew) {
+      callHooks(Hooks.BEFORE_MOUNT, fiber.hooks);
+    } else if (updating) {
+      callHooks(Hooks.BEFORE_UPDATE, fiber.hooks);
+    }
     reconcileChildren(fiber, children);
+    if (isNew) {
+      callHooks(Hooks.MOUNTED, fiber.hooks);
+    } else if (updating) {
+      callHooks(Hooks.UPDATED, fiber.hooks);
+    }
   }
   function updateFragmentComponent(fiber) {
     if (fiber.type == Fragment) {
@@ -207,7 +245,7 @@ var soursop = (function (exports) {
     requestIdleCallback(workLoop);
   }
   function performUnitOfWork(fiber) {
-    if (fiber.type instanceof Function) {
+    if (isFunctionComponent(fiber)) {
       updateFunctionComponent(fiber);
     } else if (fiber.type == Fragment) {
       updateFragmentComponent(fiber);
@@ -239,60 +277,73 @@ var soursop = (function (exports) {
     requestIdleCallback(workLoop);
   }
 
-  var Hooks = /* @__PURE__ */ ((Hooks2) => {
-    Hooks2[Hooks2["BEFORE_CREATE"] = 0] = "BEFORE_CREATE";
-    Hooks2[Hooks2["CREATED"] = 1] = "CREATED";
-    Hooks2[Hooks2["BEFORE_MOUNT"] = 2] = "BEFORE_MOUNT";
-    Hooks2[Hooks2["MOUNTED"] = 3] = "MOUNTED";
-    Hooks2[Hooks2["BEFORE_UPDATE"] = 4] = "BEFORE_UPDATE";
-    Hooks2[Hooks2["UPDATED"] = 5] = "UPDATED";
-    Hooks2[Hooks2["BEFORE_UNMOUNT"] = 6] = "BEFORE_UNMOUNT";
-    Hooks2[Hooks2["UNMOUNTED"] = 7] = "UNMOUNTED";
-    Hooks2[Hooks2["USE_STATE"] = 8] = "USE_STATE";
-    return Hooks2;
-  })(Hooks || {});
-
-  function createHook(lifecycle) {
-    return (callback) => callback();
+  function createHook(lifecycle, hookFn) {
+    if (!(hookFn instanceof Function)) {
+      throw Error("The second argument of `createHook` must be a function");
+    }
+    const getData = () => {
+      var _a, _b, _c;
+      const data = (_c = (_b = (_a = globals.wipFiber) == null ? void 0 : _a.alternate) == null ? void 0 : _b.hooks) == null ? void 0 : _c.get(lifecycle);
+      if (data) {
+        return data.at(-1);
+      }
+    };
+    const setData = (hook) => {
+      var _a, _b, _c;
+      const hooks = (_c = (_b = (_a = globals.wipFiber) == null ? void 0 : _a.hooks) == null ? void 0 : _b.get(lifecycle)) != null ? _c : [];
+      globals.wipFiber.hooks.set(lifecycle, [...hooks, hook]);
+    };
+    return hookFn(getData, setData);
   }
 
   function useState(initial) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
-    const oldHook = (_e = (_d = (_c = (_b = (_a = globals.wipFiber) == null ? void 0 : _a.alternate) == null ? void 0 : _b.hooks) == null ? void 0 : _c.at(Hooks.USE_STATE)) == null ? void 0 : _d.at(globals.useStateIndex)) != null ? _e : {};
-    const hook = {
-      state: (_f = oldHook.state) != null ? _f : initial,
-      queue: []
-    };
-    ((_g = oldHook.queue) != null ? _g : []).forEach((action) => {
-      hook.state = action(hook.state);
-    });
-    const setState = (partial) => {
-      var _a2, _b2;
-      if (!(partial instanceof Function)) {
-        const _p = partial;
-        partial = () => _p;
+    let hookValue = void 0;
+    const hook = createHook(
+      Hooks.USE_STATE,
+      (getData, setData) => {
+        var _a, _b, _c;
+        const oldHook = (_a = getData()) != null ? _a : {};
+        const hook2 = {
+          state: (_b = oldHook.state) != null ? _b : initial,
+          queue: []
+        };
+        ((_c = oldHook.queue) != null ? _c : []).forEach((action) => {
+          hook2.state = action(hook2.state);
+        });
+        hookValue = hook2.state;
+        const setState = (partial) => {
+          var _a2, _b2;
+          if (!(partial instanceof Function)) {
+            const _p = partial;
+            partial = () => _p;
+          }
+          hook2.queue.push(partial);
+          globals.wipRoot = {
+            dom: (_a2 = globals.currentRoot) == null ? void 0 : _a2.dom,
+            props: (_b2 = globals.currentRoot) == null ? void 0 : _b2.props,
+            alternate: globals.currentRoot
+          };
+          globals.nextUnitOfWork = globals.wipRoot;
+          globals.deletions = [];
+        };
+        setData(hook2);
+        return setState;
       }
-      hook.queue.push(partial);
-      globals.wipRoot = {
-        dom: (_a2 = globals.currentRoot) == null ? void 0 : _a2.dom,
-        props: (_b2 = globals.currentRoot) == null ? void 0 : _b2.props,
-        alternate: globals.currentRoot
-      };
-      globals.nextUnitOfWork = globals.wipRoot;
-      globals.deletions = [];
-    };
-    const hooks = (_j = (_i = (_h = globals.wipFiber) == null ? void 0 : _h.hooks) == null ? void 0 : _i.at(Hooks.USE_STATE)) != null ? _j : [];
-    globals.wipFiber.hooks[Hooks.USE_STATE] = [...hooks, hook];
-    globals.useStateIndex += 1;
-    return [hook.state, setState];
+    );
+    return [hookValue, hook];
   }
 
-  const onBeforeMount = createHook(Hooks.BEFORE_MOUNT);
-  const onMounted = createHook(Hooks.MOUNTED);
-  const onBeforeUpdate = createHook(Hooks.BEFORE_UPDATE);
-  const onUpdated = createHook(Hooks.UPDATED);
-  const onBeforeUnmount = createHook(Hooks.BEFORE_UNMOUNT);
-  const onUnmounted = createHook(Hooks.UNMOUNTED);
+  function _simpleHook(getData, setData) {
+    return (callback) => {
+      setData(callback);
+    };
+  }
+  const onBeforeMount = createHook(Hooks.BEFORE_MOUNT, _simpleHook);
+  const onMounted = createHook(Hooks.MOUNTED, _simpleHook);
+  const onBeforeUpdate = createHook(Hooks.BEFORE_UPDATE, _simpleHook);
+  const onUpdated = createHook(Hooks.UPDATED, _simpleHook);
+  const onBeforeUnmount = createHook(Hooks.BEFORE_UNMOUNT, _simpleHook);
+  const onUnmounted = createHook(Hooks.UNMOUNTED, _simpleHook);
 
   exports.Fragment = Fragment;
   exports.createElement = createElement;
