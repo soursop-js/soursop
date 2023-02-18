@@ -213,6 +213,9 @@ var soursop = (function (exports) {
         let deletes = function(fiber) {
           fiber.effectTag = "DELETION";
           if (fiber.child) {
+            if (fiber.parent.type == Fragment && fiber.sibling) {
+              deletes(fiber.sibling);
+            }
             deletes(fiber.child);
           }
         };

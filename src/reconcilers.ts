@@ -8,33 +8,33 @@ export function updateFunctionComponent(fiber: Fiber) {
   // globals.useStateIndex = 0
   globals.wipFiber.hooks = new Map()
 
-  if(!(fiber.type instanceof Function)) {
+  if (!(fiber.type instanceof Function)) {
     return
   }
-    
+
   const isNew = fiber.effectTag == "PLACEMENT"
   const updating = fiber.effectTag == "UPDATE"
-  
+
   const children = [fiber.type(fiber.props)]
 
-  if(isNew) {
+  if (isNew) {
     callHooks(Hooks.CREATED, fiber.hooks!)
     callHooks(Hooks.BEFORE_MOUNT, fiber.hooks!)
   } else if (updating) {
     callHooks(Hooks.BEFORE_UPDATE, fiber.hooks!)
   }
-  
+
   reconcileChildren(fiber, children)
 
-  if(isNew) {
+  if (isNew) {
     callHooks(Hooks.MOUNTED, fiber.hooks!);
-  } else if(updating) {
+  } else if (updating) {
     callHooks(Hooks.UPDATED, fiber.hooks!)
   }
 }
 
 export function updateFragmentComponent(fiber: Fiber) {
-  if(fiber.type == Fragment) {
+  if (fiber.type == Fragment) {
     reconcileChildren(fiber, fiber.props.children!)
   }
 }
@@ -51,7 +51,7 @@ export function reconcileChildren(wipFiber: Fiber, elements: VDom[]) {
   let oldFiber = wipFiber?.alternate?.child
   let prevSibling: Fiber | undefined = undefined
 
-  while ( elements &&
+  while (elements &&
     index < elements.length ||
     oldFiber
   ) {
@@ -86,7 +86,11 @@ export function reconcileChildren(wipFiber: Fiber, elements: VDom[]) {
         fiber.effectTag = "DELETION"
 
         if (fiber.child) {
-          deletes(fiber.child)
+          if (fiber.parent.type == Fragment && fiber.sibling) {
+            deletes(fiber.sibling)
+          }
+
+          deletes(fiber.child);
         }
       }
 
