@@ -33,7 +33,7 @@ NPM version
 
 GitHub (dev) version
 ```html
-<script src="https://cdn.jsdelivr.net/gh/natanfeitosa/soursop/dist/soursop.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/natanfeitosa/soursop@HEAD/dist/soursop.iife.js"></script>
 ```
 
 ## Quickstart
