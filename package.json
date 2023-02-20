@@ -2,6 +2,7 @@
   "name": "soursop",
   "version": "0.3.0",
   "description": "A small reactive tool for rich web pages",
+  "type": "module",
   "main": "dist/index.js",
   "unpkg": "dist/soursop.iife.js",
   "jsdelivr": "dist/soursop.iife.js",
@@ -22,20 +23,27 @@
     "clear": "rimraf dist",
     "build": "rollup -c"
   },
-  "keywords": ["reactive", "vue", "front-end", "vdom", "ui", "react"],
+  "keywords": [
+    "reactive",
+    "vue",
+    "front-end",
+    "vdom",
+    "ui",
+    "react"
+  ],
   "author": "Natan Feitosa <natansantosapps@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@types/node": "^18.0.6"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^11.0.0",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
     "deepmerge": "^4.3.0",
     "eslint": "^8.33.0",
     "rimraf": "^4.1.2",
-    "rollup": "^2.79.1",
+    "rollup": "^3.17.2",
+    "rollup-plugin-dts": "^5.2.0",
     "rollup-plugin-esbuild": "^5.0.0",
     "typescript": "^4.9.5"
   }

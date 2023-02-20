@@ -362,8 +362,6 @@ var soursop = (function (exports) {
   exports.render = render;
   exports.useState = useState;
 
-  Object.defineProperty(exports, '__esModule', { value: true });
-
   return exports;
 
 })({});

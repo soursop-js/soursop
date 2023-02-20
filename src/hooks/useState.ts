@@ -7,7 +7,9 @@ type useStateHook<S> = {
   queue: ((s: S) => S)[]
 }
 
-type useStateReturn<S> = [S, (partial: S | ((s: S) => S)) => void]
+type setStateType<S> = (partial: S | ((s: S) => S)) => void
+
+type useStateReturn<S> = [S, setStateType<S>]
 
 export default function useState<T>(initial: T): useStateReturn<T> {
   let hookValue = undefined as T
@@ -28,7 +30,7 @@ export default function useState<T>(initial: T): useStateReturn<T> {
 
     hookValue = hook.state
   
-    const setState = (partial: T | ((s: T) => T)) => {
+    const setState: setStateType<T> = partial => {
       if (!(partial instanceof Function)) {
         const _p = partial
         partial = () => _p
@@ -45,9 +47,9 @@ export default function useState<T>(initial: T): useStateReturn<T> {
     }
 
     setData(hook)
-
     return setState
   })
 
+  //@ts-ignore
   return [hookValue, hook]
 }
