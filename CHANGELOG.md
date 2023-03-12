@@ -20,6 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `onCreated` lifecycle hook
+- `onBeforeMount` lifecycle hook
+- `onMounted` lifecycle hook
+- `onBeforeUpdate` lifecycle hook
+- `onUpdated` lifecycle hook
+- `onBeforeUnmount` lifecycle hook
+- `onUnmounted` lifecycle hook
 
 ### Changed
 
