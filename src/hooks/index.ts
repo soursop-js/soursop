@@ -16,3 +16,4 @@ export const onBeforeUnmount = createHook(Hooks.BEFORE_UNMOUNT, _simpleHook)
 export const onUnmounted = createHook(Hooks.UNMOUNTED, _simpleHook)
 
 export { default as useState, type setState } from './useState'
+export { default as useWatch, type useWatchCb } from './useWatch'
