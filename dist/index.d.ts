@@ -24,7 +24,6 @@ type VDom = VElement | VComponentElement<Record<string, unknown>> | VTextElement
 type VProps = Record<string, unknown> & {
     children?: VDom[];
 };
-type lifecycleHookFn = ((callback: (() => void)) => void);
 
 declare function createElement(type: string, props: Record<string, unknown>, ...children: Array<VDom | TPrimitive>): VDom;
 
@@ -32,16 +31,19 @@ declare function render(element: VDom, container: Element): void;
 
 declare const Fragment: unique symbol;
 
-type setStateType<S> = (partial: S | ((s: S) => S)) => void;
-type useStateReturn<S> = [S, setStateType<S>];
-declare function useState<T>(initial: T): useStateReturn<T>;
+type setState<S> = (partial: S | ((s: S) => S)) => void;
+type useStateReturn<S> = [S, setState<S>];
+declare function useState<T>(initial?: T): useStateReturn<T>;
 
-declare const onCreated: lifecycleHookFn;
-declare const onBeforeMount: lifecycleHookFn;
-declare const onMounted: lifecycleHookFn;
-declare const onBeforeUpdate: lifecycleHookFn;
-declare const onUpdated: lifecycleHookFn;
-declare const onBeforeUnmount: lifecycleHookFn;
-declare const onUnmounted: lifecycleHookFn;
+type useWatchCb<O> = (newValue: O, oldValue: O) => void;
+declare const useWatch: <O>(callback: useWatchCb<O>, observables: O, immediate?: boolean) => () => void;
 
-export { Fragment, createElement, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onCreated, onMounted, onUnmounted, onUpdated, render, useState };
+declare const onCreated: (callback: (() => void)) => void;
+declare const onBeforeMount: (callback: (() => void)) => void;
+declare const onMounted: (callback: (() => void)) => void;
+declare const onBeforeUpdate: (callback: (() => void)) => void;
+declare const onUpdated: (callback: (() => void)) => void;
+declare const onBeforeUnmount: (callback: (() => void)) => void;
+declare const onUnmounted: (callback: (() => void)) => void;
+
+export { Fragment, createElement, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onCreated, onMounted, onUnmounted, onUpdated, render, setState, useState, useWatch, useWatchCb };

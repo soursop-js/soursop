@@ -44,6 +44,27 @@ var soursop = (function (exports) {
     }
     ((_c = hooks.get(lifecycle)) != null ? _c : []).forEach((hook) => hook());
   }
+  function isSameType(newData, oldData) {
+    return typeof newData == typeof oldData;
+  }
+  function isEquals(newData, oldData) {
+    if (!isSameType(newData, oldData)) {
+      return false;
+    }
+    if (typeof newData == "object") {
+      if (Array.isArray(newData)) {
+        const newLength = newData.length;
+        const oldLength = oldData.length;
+        return newLength == oldLength && newData.every((val, idx) => oldData.at(idx) == val);
+      }
+      const newKeys = Object.keys(newData);
+      const oldKeys = Object.keys(oldData);
+      const newValues = Object.values(newData);
+      const oldValues = Object.values(oldData);
+      return isEquals(newKeys, oldKeys) && isEquals(newValues, oldValues);
+    }
+    return newData === oldData;
+  }
 
   function updateDom(dom, prevProps, nextProps) {
     if (!Boolean(prevProps)) {
@@ -98,6 +119,7 @@ var soursop = (function (exports) {
     Hooks2[Hooks2["BEFORE_UNMOUNT"] = 6] = "BEFORE_UNMOUNT";
     Hooks2[Hooks2["UNMOUNTED"] = 7] = "UNMOUNTED";
     Hooks2[Hooks2["USE_STATE"] = 8] = "USE_STATE";
+    Hooks2[Hooks2["USE_WATCH"] = 9] = "USE_WATCH";
     return Hooks2;
   })(Hooks || {});
 
@@ -307,21 +329,21 @@ var soursop = (function (exports) {
       (getData, setData) => {
         var _a, _b, _c;
         const oldHook = (_a = getData()) != null ? _a : {};
-        const hook2 = {
-          state: (_b = oldHook.state) != null ? _b : initial,
+        const newHook = {
+          state: (_b = oldHook == null ? void 0 : oldHook.state) != null ? _b : initial,
           queue: []
         };
         ((_c = oldHook.queue) != null ? _c : []).forEach((action) => {
-          hook2.state = action(hook2.state);
+          newHook.state = action(newHook.state);
         });
-        hookValue = hook2.state;
+        hookValue = newHook.state;
         const setState = (partial) => {
           var _a2, _b2;
           if (!(partial instanceof Function)) {
             const _p = partial;
             partial = () => _p;
           }
-          hook2.queue.push(partial);
+          newHook.queue.push(partial);
           globals.wipRoot = {
             dom: (_a2 = globals.currentRoot) == null ? void 0 : _a2.dom,
             props: (_b2 = globals.currentRoot) == null ? void 0 : _b2.props,
@@ -330,16 +352,36 @@ var soursop = (function (exports) {
           globals.nextUnitOfWork = globals.wipRoot;
           globals.deletions = [];
         };
-        setData(hook2);
+        setData(newHook);
         return setState;
       }
     );
     return [hookValue, hook];
   }
 
-  function _simpleHook(getData, setData) {
+  const useWatch = createHook(Hooks.USE_WATCH, (getData, setData) => {
+    return (callback, observables, immediate = false) => {
+      const curState = { active: true, callback, observables };
+      const oldState = getData();
+      if (!oldState && immediate) {
+        callback(curState.observables, void 0);
+      }
+      if (oldState && !oldState.active) {
+        curState.active = oldState.active;
+      }
+      if (oldState && oldState.active && !isEquals(oldState.observables, curState.observables)) {
+        oldState.callback(curState.observables, oldState.observables);
+      }
+      setData(curState);
+      return () => {
+        curState.active = false;
+      };
+    };
+  });
+
+  function _simpleHook(_getData, setData2) {
     return (callback) => {
-      setData(callback);
+      setData2(callback);
     };
   }
   const onCreated = createHook(Hooks.CREATED, _simpleHook);
@@ -361,6 +403,7 @@ var soursop = (function (exports) {
   exports.onUpdated = onUpdated;
   exports.render = render;
   exports.useState = useState;
+  exports.useWatch = useWatch;
 
   return exports;
 
