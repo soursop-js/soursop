@@ -7,7 +7,8 @@ export const enum Hooks {
   UPDATED,
   BEFORE_UNMOUNT,
   UNMOUNTED,
-  USE_STATE
+  USE_STATE,
+  USE_WATCH,
 }
 
 export type HooksMap = Map<Hooks, unknown[]>
@@ -60,4 +61,8 @@ export type Fiber = {
   effectTag?: 'UPDATE' | 'PLACEMENT' | 'DELETION'
 }
 
-export type lifecycleHookFn = ((callback: (() => void)) => void)
+export type getData<D> = () => D | void
+
+export type setData<D> = (hook: D) => void
+
+export type hookRaw<R, D> = (getData: getData<D>, setData: setData<D>) => R

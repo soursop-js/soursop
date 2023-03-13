@@ -7,36 +7,36 @@ type useStateHook<S> = {
   queue: ((s: S) => S)[]
 }
 
-type setStateType<S> = (partial: S | ((s: S) => S)) => void
+export type setState<S> = (partial: S | ((s: S) => S)) => void
 
-type useStateReturn<S> = [S, setStateType<S>]
+type useStateReturn<S> = [S, setState<S>]
 
-export default function useState<T>(initial: T): useStateReturn<T> {
-  let hookValue = undefined as T
+export default function useState<T>(initial?: T): useStateReturn<T> {
+  let hookValue = undefined;
   
-  const hook = createHook<useStateReturn<T>, useStateHook<T>>(
+  const hook = createHook<setState<T>, useStateHook<T>>(
     Hooks.USE_STATE,
-    (getData: (() => useStateHook<T>), setData: ((s: useStateHook<T>) => void)) => {
+    (getData, setData) => {
     const oldHook = getData() ?? {} as useStateHook<T>
     
-    const hook = {
-      state: oldHook.state ?? initial,
+    const newHook = {
+      state: oldHook?.state ?? initial,
       queue: [],
-    } as useStateHook<T>
+    } as unknown as useStateHook<T>
   
     (oldHook.queue ?? []).forEach(action => {
-      hook.state = action(hook.state)
+      newHook.state = action(newHook.state)
     })
 
-    hookValue = hook.state
+    hookValue = newHook.state
   
-    const setState: setStateType<T> = partial => {
+    const setState = (partial: T | ((s: T) => T)) => {
       if (!(partial instanceof Function)) {
         const _p = partial
         partial = () => _p
       }
         
-      hook.queue.push(partial)
+      newHook.queue.push(partial)
       globals.wipRoot = {
         dom: globals.currentRoot?.dom,
         props: globals.currentRoot?.props as VProps,
@@ -46,10 +46,10 @@ export default function useState<T>(initial: T): useStateReturn<T> {
       globals.deletions = []
     }
 
-    setData(hook)
+    setData(newHook)
+
     return setState
   })
 
-  //@ts-ignore
-  return [hookValue, hook]
+  return [hookValue as unknown as T, hook]
 }
