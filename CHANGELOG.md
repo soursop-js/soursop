@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `useWatch` hook for observe values from `observable` param
+
 ### Changed
 
 ### Fixed
+
+- typings
 
 ### Removed
 
