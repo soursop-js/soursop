@@ -31,6 +31,21 @@ export default [
   {
     input: 'src/index.ts',
     output: {
+      file: 'dist/soursop.esm.js',
+      format: 'es',
+      exports: 'named',
+    },
+    plugins: [
+      // typescript()
+      esbuild({
+        tsconfig: path.join('.', '/tsconfig.json'),
+        target: 'es2019',
+      })
+    ],
+  },
+  {
+    input: 'src/index.ts',
+    output: {
       file: 'dist/soursop.iife.js',
       format: 'iife',
       name: 'soursop',
