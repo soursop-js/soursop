@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import globals from "./globals"
 import type { Fiber, Hooks, HooksMap, VProps } from "./types"
 
@@ -8,19 +9,18 @@ export const isProperty = (key: string) => key !== "children" && !isEvent(key)
 export const isNew = (prev: VProps, next: VProps) => (key: string) => prev[key] !== next[key]
 
 export function normalizeAttrs(attrs: Record<string, unknown>) {
-  const news = {}
+  const news = {} as Record<string, unknown>
 
   for(let [attr, val] of Object.entries(attrs)) {
-    if(attr.toLowerCase() === 'classname') {
-      news['class'] = val
-      continue
-    }
-
     if(val == false) {
       continue
     }
 
-    news[attr] = val
+    if(attr.toLowerCase() === 'classname') {
+      attr = 'class'
+    }
+
+    news[attr] = attr === 'class' ? classnames(val) : attr
   }
 
   return news

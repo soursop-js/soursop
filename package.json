@@ -35,9 +35,12 @@
   "author": "Natan Feitosa <natansantosapps@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^18.0.6"
+    "@types/node": "^18.0.6",
+    "classnames": "^2.3.2"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
     "deepmerge": "^4.3.0",

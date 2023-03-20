@@ -1,6 +1,8 @@
 import path from "path";
 import esbuild from 'rollup-plugin-esbuild'
 import dts from "rollup-plugin-dts"
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 // import typescript from '@rollup/plugin-typescript';
 
 export default [
@@ -56,7 +58,9 @@ export default [
       esbuild({
         tsconfig: path.join('.', '/tsconfig.json'),
         target: 'es2019',
-      })
+      }),
+      nodeResolve(),
+      commonjs(),
     ],
   }
 ];
