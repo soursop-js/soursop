@@ -4,6 +4,7 @@
   "description": "A small reactive tool for rich web pages",
   "type": "module",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "unpkg": "dist/soursop.iife.js",
   "jsdelivr": "dist/soursop.iife.js",
   "types": "dist/index.d.ts",
