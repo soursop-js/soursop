@@ -42,7 +42,7 @@ export function updateDom(dom: RDom, prevProps: VProps, nextProps: VProps) {
     .filter(isProperty)
     .filter(key => !(key in nextProps))
     .forEach(name => {
-      (dom as Element).removeAttribute(transformAttr(name))
+      (dom as Element).removeAttribute(name)
     })
 
   // Set new or changed properties
@@ -50,7 +50,7 @@ export function updateDom(dom: RDom, prevProps: VProps, nextProps: VProps) {
     .filter(isProperty)
     .filter(isNew(prevProps, nextProps))
     .forEach(name => {      
-      (dom as Element).setAttribute(transformAttr(name), nextProps[name] as string)
+      (dom as Element).setAttribute(name, nextProps[name] as string)
     })
 
   // Add event listeners

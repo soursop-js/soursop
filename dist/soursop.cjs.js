@@ -2,28 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-function createElement(type, props, ...children) {
-  children = children.filter((c) => ![null, void 0, false].includes(c));
-  return {
-    type,
-    props: {
-      ...props,
-      children: children.map(
-        (child) => typeof child === "object" ? child : createTextElement(child)
-      )
-    }
-  };
-}
-function createTextElement(text) {
-  return {
-    type: "TEXT_ELEMENT",
-    props: {
-      nodeValue: text
-      // children: [],
-    }
-  };
-}
-
 class Globals {
   constructor() {
     this.deletions = [];
@@ -36,7 +14,20 @@ const Fragment = Symbol.for("Soursop.Fragment");
 const isEvent = (key) => key.startsWith("on");
 const isProperty = (key) => key !== "children" && !isEvent(key);
 const isNew = (prev, next) => (key) => prev[key] !== next[key];
-const transformAttr = (name) => name.toLowerCase() == "classname" ? "class" : name;
+function normalizeAttrs(attrs) {
+  const news = {};
+  for (let [attr, val] of Object.entries(attrs)) {
+    if (attr.toLowerCase() === "classname") {
+      news["class"] = val;
+      continue;
+    }
+    if (val == false) {
+      continue;
+    }
+    news[attr] = val;
+  }
+  return news;
+}
 const isFunctionComponent = (fiber) => fiber.type instanceof Function;
 function callHooks(lifecycle, hooks) {
   var _a, _b, _c;
@@ -67,6 +58,28 @@ function isEquals(newData, oldData) {
   return newData === oldData;
 }
 
+function createElement(type, props, ...children) {
+  children = children.filter((c) => ![null, void 0, false].includes(c));
+  return {
+    type,
+    props: {
+      ...normalizeAttrs(props != null ? props : {}),
+      children: children.map(
+        (child) => typeof child === "object" ? child : createTextElement(child)
+      )
+    }
+  };
+}
+function createTextElement(text) {
+  return {
+    type: "TEXT_ELEMENT",
+    props: {
+      nodeValue: text
+      // children: [],
+    }
+  };
+}
+
 function updateDom(dom, prevProps, nextProps) {
   if (!Boolean(prevProps)) {
     prevProps = {};
@@ -91,10 +104,10 @@ function updateDom(dom, prevProps, nextProps) {
     );
   });
   Object.keys(prevProps).filter(isProperty).filter((key) => !(key in nextProps)).forEach((name) => {
-    dom.removeAttribute(transformAttr(name));
+    dom.removeAttribute(name);
   });
   Object.keys(nextProps).filter(isProperty).filter(isNew(prevProps, nextProps)).forEach((name) => {
-    dom.setAttribute(transformAttr(name), nextProps[name]);
+    dom.setAttribute(name, nextProps[name]);
   });
   Object.keys(nextProps).filter(isEvent).filter(isNew(prevProps, nextProps)).forEach((name) => {
     const eventType = name.toLowerCase().substring(2);
