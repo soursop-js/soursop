@@ -2,6 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+var classnames = require('classnames');
+
 class Globals {
   constructor() {
     this.deletions = [];
@@ -17,14 +19,13 @@ const isNew = (prev, next) => (key) => prev[key] !== next[key];
 function normalizeAttrs(attrs) {
   const news = {};
   for (let [attr, val] of Object.entries(attrs)) {
-    if (attr.toLowerCase() === "classname") {
-      news["class"] = val;
-      continue;
-    }
     if (val == false) {
       continue;
     }
-    news[attr] = val;
+    if (attr.toLowerCase() === "classname") {
+      attr = "class";
+    }
+    news[attr] = attr === "class" ? classnames(val) : attr;
   }
   return news;
 }
