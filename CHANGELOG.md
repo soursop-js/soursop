@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - esm import
+- attribute equal to false ([#12](https://github.com/natanfeitosa/soursop/issues/12))
+- dynamic class ([#14](https://github.com/natanfeitosa/soursop/issues/14))
 
 ### Removed
 
