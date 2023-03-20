@@ -7,7 +7,24 @@ export const isProperty = (key: string) => key !== "children" && !isEvent(key)
 
 export const isNew = (prev: VProps, next: VProps) => (key: string) => prev[key] !== next[key]
 
-export const transformAttr = (name: string) => name.toLowerCase() == 'classname' ? 'class' : name
+export function normalizeAttrs(attrs: Record<string, unknown>) {
+  const news = {}
+
+  for(let [attr, val] of Object.entries(attrs)) {
+    if(attr.toLowerCase() === 'classname') {
+      news['class'] = val
+      continue
+    }
+
+    if(val == false) {
+      continue
+    }
+
+    news[attr] = val
+  }
+
+  return news
+}
 
 export const isFunctionComponent = (fiber: Fiber) => fiber.type instanceof Function;
 

@@ -1,4 +1,5 @@
 import type { TPrimitive, VDom, VTextElement } from "./types"
+import { normalizeAttrs } from './utils'
 
 export default function createElement(type: string, props: Record<string, unknown>, ...children: Array<VDom | TPrimitive>): VDom {
   children = children.filter(c => ![null, undefined, false].includes(<null | undefined | boolean>c))
@@ -6,7 +7,7 @@ export default function createElement(type: string, props: Record<string, unknow
   return {
     type,
     props: {
-      ...props,
+      ...normalizeAttrs(props ?? {}),
       children: children.map(child =>
         typeof child === "object"
           ? (child as VDom)
