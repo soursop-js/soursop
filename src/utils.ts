@@ -20,7 +20,7 @@ export function normalizeAttrs(attrs: Record<string, unknown>) {
       attr = 'class'
     }
 
-    news[attr] = attr === 'class' ? classnames(val) : attr
+    news[attr] = attr === 'class' ? classnames(val) : val
   }
 
   return news

@@ -87,7 +87,7 @@ var soursop = (function (exports) {
       if (attr.toLowerCase() === "classname") {
         attr = "class";
       }
-      news[attr] = attr === "class" ? classnames(val) : attr;
+      news[attr] = attr === "class" ? classnames(val) : val;
     }
     return news;
   }
