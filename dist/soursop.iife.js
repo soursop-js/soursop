@@ -122,7 +122,7 @@ var soursop = (function (exports) {
   }
 
   function createElement(type, props, ...children) {
-    children = children.filter((c) => ![null, void 0, false].includes(c));
+    children = children.flat().filter((c) => ![null, void 0, false].includes(c));
     return {
       type,
       props: {
