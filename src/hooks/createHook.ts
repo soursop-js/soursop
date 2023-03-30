@@ -9,7 +9,8 @@ export default function createHook<R, D>(lifecycle: Hooks, hookFn: hookRaw<R, D>
   const getData = () => {
     const data = globals.wipFiber?.alternate?.hooks?.get(lifecycle)
     if(data) {
-      return data.at(-1) as D
+      const currents = globals.wipFiber?.hooks?.get(lifecycle) ?? []
+      return data.at(currents.length) as D
     }
   }
 

@@ -319,10 +319,11 @@ function createHook(lifecycle, hookFn) {
     throw Error("The second argument of `createHook` must be a function");
   }
   const getData = () => {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e, _f;
     const data = (_c = (_b = (_a = globals.wipFiber) == null ? void 0 : _a.alternate) == null ? void 0 : _b.hooks) == null ? void 0 : _c.get(lifecycle);
     if (data) {
-      return data.at(-1);
+      const currents = (_f = (_e = (_d = globals.wipFiber) == null ? void 0 : _d.hooks) == null ? void 0 : _e.get(lifecycle)) != null ? _f : [];
+      return data.at(currents.length);
     }
   };
   const setData = (hook) => {
