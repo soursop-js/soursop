@@ -1,5 +1,5 @@
 import type { RDom, VProps, Fiber } from "./types"
-import { isEvent, isNew, isProperty, transformAttr } from "./utils"
+import { isEvent, isNew, isProperty } from "./utils"
 
 export function updateDom(dom: RDom, prevProps: VProps, nextProps: VProps) {
   if(!Boolean(prevProps)) {
