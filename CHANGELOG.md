@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- dynamic array of elements
+- hooks data
+
 ### Removed
 
 ## [v0.4.1](https://github.com/natanfeitosa/soursop/compare/v0.4.0...v0.4.1) - 2023-03-27
