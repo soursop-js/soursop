@@ -1,6 +1,6 @@
 {
   "name": "soursop",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "A small reactive tool for rich web pages",
   "type": "module",
   "main": "dist/index.js",
